@@ -1,0 +1,7 @@
+name: MafanaAdminManager
+version: '${project.version}'
+main: me.tahacheji.mafana.MafanaAdminManager
+api-version: 1.20
+
+commands:
+  MAM:

@@ -1,15 +1,18 @@
 package me.tahacheji.mafana;
 
 import me.tahacheji.mafana.command.AdminCommand;
+import me.tahacheji.mafana.data.AdminMYSQL;
 import me.tahacheji.mafana.data.BuilderData;
 import me.tahacheji.mafana.data.BuilderMYSQL;
 import me.tahacheji.mafana.event.*;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -20,17 +23,15 @@ public final class MafanaAdminManager extends JavaPlugin {
     private static MafanaAdminManager instance;
     private List<BuilderData> builderDataList = new ArrayList<>();
     private BuilderMYSQL builderMYSQL;
+    private AdminMYSQL adminMYSQL;
     private List<BuilderData> afkBuilderDataList = new ArrayList<>();
     @Override
     public void onEnable() {
         instance = this;
         builderMYSQL = new BuilderMYSQL();
         builderMYSQL.connect();
-        //add admin manager in mysql
-        //add builder manager in mysql
-        //log days and hours put into each log in
-        //log blocks
-
+        adminMYSQL = new AdminMYSQL();
+        adminMYSQL.connect();
         getServer().getPluginManager().registerEvents(new PlayerBreak(), this);
         getServer().getPluginManager().registerEvents(new PlayerJoin(), this);
         getServer().getPluginManager().registerEvents(new PlayerLeave(), this);
@@ -50,6 +51,10 @@ public final class MafanaAdminManager extends JavaPlugin {
         return builderMYSQL;
     }
 
+    public AdminMYSQL getAdminMYSQL() {
+        return adminMYSQL;
+    }
+
     public void runBuilderDataRunCurrentTime() {
         new BukkitRunnable() {
             @Override
@@ -59,10 +64,25 @@ public final class MafanaAdminManager extends JavaPlugin {
                         continue;
                     }
                     for(ItemStack itemStack : builderData.getPlayer().getInventory()) {
+                        if(itemStack == null) {
+                            continue;
+                        }
                         if(itemStack.getType() == Material.TNT || itemStack.getType() == Material.LAVA || itemStack.getType() == Material.FLINT_AND_STEEL || itemStack.getType() == Material.CREEPER_SPAWN_EGG) {
                             itemStack.setType(Material.AIR);
                         }
                     }
+                    Player player = builderData.getPlayer();
+                    if(builderData.getAfkLocation() != null) {
+                        if (builderData.getAfkLocation().getX() == player.getLocation().getX() && builderData.getAfkLocation().getY() == player.getLocation().getY() && builderData.getAfkLocation().getZ() == player.getLocation().getZ()) {
+                            builderData.setAfkX(builderData.getAfkX() + 1);
+                            if (builderData.getAfkX() >= 5) {
+                                builderData.setAfkSeconds(builderData.getAfkSeconds() + 5);
+                            }
+                            continue;
+                        }
+                    }
+                    builderData.setAfkX(0);
+                    builderData.setAfkLocation(builderData.getPlayer().getLocation());
                     builderData.setActiveSeconds(builderData.getActiveSeconds() + 5);
                 }
             }

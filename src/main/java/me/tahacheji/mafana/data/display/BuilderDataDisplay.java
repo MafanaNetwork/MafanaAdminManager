@@ -140,7 +140,7 @@ public class BuilderDataDisplay {
         gui.setItem(18, new GuiItem(greystainedglass));
         gui.setItem(9, new GuiItem(greystainedglass));
         gui.setItem(49, new GuiItem(closeShop, event -> {
-            event.getWhoClicked().closeInventory();
+            gui.close(event.getWhoClicked());
         }));
         gui.setItem(6, 3, ItemBuilder.from(Material.PAPER).setName(ChatColor.DARK_GRAY + "Previous")
                 .asGuiItem(event -> gui.previous()));
@@ -148,9 +148,9 @@ public class BuilderDataDisplay {
                 .asGuiItem(event -> gui.next()));
         for(Material material : blocks) {
             if(broke) {
-                gui.addItem(ItemBuilder.from(material).setName(ChatColor.GOLD + material.name() + "Broken").asGuiItem());
+                gui.addItem(ItemBuilder.from(material).setName(ChatColor.GOLD + material.name() + " Broken").asGuiItem());
             } else {
-                gui.addItem(ItemBuilder.from(material).setName(ChatColor.GOLD + material.name() + "Placed").asGuiItem());
+                gui.addItem(ItemBuilder.from(material).setName(ChatColor.GOLD + material.name() + " Placed").asGuiItem());
             }
         }
         return gui;

@@ -18,6 +18,7 @@ public class BuilderData {
     private int activeSeconds = 0;
     private int afkSeconds = 0;
     private Location afkLocation;
+    private int afkX = 0;
 
 
     public BuilderData(Player builder) {
@@ -86,6 +87,14 @@ public class BuilderData {
         int secs = seconds % 60;
 
         return String.format("%02d:%02d:%02d", hours, minutes, secs);
+    }
+
+    public int getAfkX() {
+        return afkX;
+    }
+
+    public void setAfkX(int afkX) {
+        this.afkX = afkX;
     }
 
     public String getDate() {
